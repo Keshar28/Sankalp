@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sankalp's Sweetheart</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind with custom colors and font -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary-heart': '#e91e63', // Deep Pink/Rose
+                        'soft-background': '#fffafa', // Very light off-white
+                        'card-background': '#ffffff',
+                        'accent-soft': '#fce4ec', // Very pale pink
+                        'success-green': '#4caf50',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Ensures smooth, hardware-accelerated movement for the 'Yes' button */
+        .movable-button {
+            position: absolute;
+            /* Shorter transition for snappiness on 120Hz displays */
+            transition: transform 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+            cursor: pointer;
+            touch-action: none; 
+            z-index: 10;
+        }
+        /* Mobile-friendly viewport height */
+        .page-container {
+            min-height: 100vh;
+            min-height: 100svh; 
+            background: linear-gradient(135deg, #fefefe 0%, #ffebee 100%); /* Soft gradient background */
+        }
+        /* Aesthetic button styling */
+        .styled-button {
+            transition: all 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            box-shadow: 0 10px 15px -3px rgba(233, 30, 99, 0.2), 0 4px 6px -2px rgba(233, 30, 99, 0.1);
+        }
+        .styled-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 15px 25px -5px rgba(233, 30, 99, 0.3), 0 10px 10px -5px rgba(233, 30, 99, 0.15);
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800">
+
+    <div id="app" class="page-container flex flex-col items-center justify-center p-4">
+
+        <!-- ===== Page 1: Initial Message (No clock icon) ===== -->
+        <div id="page1" class="hidden w-full max-w-sm sm:max-w-md text-center p-8 bg-card-background rounded-3xl shadow-2xl transition-all duration-500 ease-in-out transform scale-95 opacity-0">
+            <!-- Clock SVG removed as requested -->
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-700 mb-8">
+                Mere Saiyaan Ji is MIA (Missing in Action)
+            </h1>
+            <button onclick="showPage(2)"
+                    class="styled-button mt-4 w-full px-8 py-3 bg-primary-heart text-white font-bold rounded-full hover:bg-pink-700 focus:outline-none focus:ring-4 focus:ring-pink-300">
+                Next <!-- Text changed from "Next Chapter" to "Next" -->
+            </button>
+        </div>
+
+        <!-- ===== Page 2: The Interactive Question/Buttons (Relative Container for movement) ===== -->
+        <div id="page2" class="hidden w-full max-w-sm sm:max-w-md text-center p-8 bg-card-background rounded-3xl shadow-2xl transition-all duration-500 ease-in-out transform scale-95 opacity-0">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-700 mb-12">
+                Do you still want to part ways with me?
+            </h1>
+
+            <div id="button-area" class="relative h-72 sm:h-96 w-full mb-4">
+                
+                <!-- Yes Button (The trick button) -->
+                <!-- The button starts centered (0,0) and is moved instantly on interaction -->
+                <button id="yes-btn"
+                        class="movable-button bg-primary-heart text-white font-extrabold rounded-full px-8 py-4 shadow-xl text-lg hover:bg-pink-700"
+                        style="transform: translate(-50%, -50%); top: 50%; left: 50%;">
+                    Yes
+                </button>
+                
+                <!-- No Button (The required button), placed statically at the bottom -->
+                <button id="no-btn" onclick="showPage(3)"
+                        class="styled-button absolute bottom-0 left-0 right-0 w-full px-8 py-4 bg-accent-soft text-gray-900 font-extrabold rounded-full text-lg hover:bg-pink-100 focus:outline-none focus:ring-4 focus:ring-pink-100">
+                    No
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ===== Page 3: Final Message ===== -->
+        <div id="page3" class="hidden w-full max-w-sm sm:max-w-md text-center p-8 bg-accent-soft rounded-3xl shadow-2xl transition-all duration-500 ease-in-out transform scale-95 opacity-0">
+            <svg class="w-20 h-20 text-primary-heart mx-auto mb-6 animate-ping-slow" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+            </svg>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-primary-heart mb-4">
+                I knew you still love me!
+            </h1>
+            <p class="text-xl sm:text-2xl font-semibold text-gray-700">
+                I Love You Sankalp❤️
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        // Global state variable
+        let currentPage = 1;
+        
+        // References to DOM elements
+        const page1 = document.getElementById('page1');
+        const page2 = document.getElementById('page2');
+        const page3 = document.getElementById('page3');
+        const yesBtn = document.getElementById('yes-btn');
+        const buttonArea = document.getElementById('button-area');
+        const pages = [page1, page2, page3];
+
+        /**
+         * Function to show the current page and hide the others with a nice transition.
+         * @param {number} pageNum - The page number to show (1, 2, or 3).
+         */
+        function showPage(pageNum) {
+            currentPage = pageNum;
+            
+            // Hide all pages with transition
+            pages.forEach(page => {
+                page.classList.remove('scale-100', 'opacity-100');
+                page.classList.add('scale-95', 'opacity-0');
+            });
+
+            // Find the target page
+            let targetPage = pages[pageNum - 1];
+
+            if (targetPage) {
+                // Wait for hide transition to complete before showing the next page
+                setTimeout(() => {
+                    pages.forEach(page => page.classList.add('hidden'));
+                    targetPage.classList.remove('hidden');
+                    
+                    // Trigger show transition
+                    setTimeout(() => {
+                        targetPage.classList.remove('scale-95', 'opacity-0');
+                        targetPage.classList.add('scale-100', 'opacity-100');
+                    }, 50); // Small delay for rendering
+
+                    // Special setup for Page 2
+                    if (pageNum === 2) {
+                        // Ensure button is centered initially
+                        yesBtn.style.transform = 'translate(-50%, -50%)'; 
+                        // Re-calculate button position on window resize for responsiveness
+                        window.addEventListener('resize', resetYesButton);
+                    } else {
+                        window.removeEventListener('resize', resetYesButton);
+                    }
+                }, 400); // Duration of the hide transition
+            }
+        }
+        
+        /**
+         * Generates new random coordinates (x, y) for the button within the button area.
+         */
+        function moveYesButton() {
+            // Get boundaries of the container
+            const bounds = buttonArea.getBoundingClientRect();
+            const btnRect = yesBtn.getBoundingClientRect();
+
+            // Calculate safe movement range (stay inside the container)
+            // Range is from 0 to container size minus button size
+            const minX = 10;
+            const minY = 10;
+            const maxX = bounds.width - btnRect.width - 10;
+            const maxY = bounds.height - btnRect.height - 100; // Keep space for the 'No' button at the bottom
+
+            if (maxX < minX || maxY < minY) {
+                 // Prevent movement if the container is too small
+                console.warn("Container too small to move button.");
+                return;
+            }
+
+            // Generate new random absolute position values
+            const newX = Math.random() * (maxX - minX) + minX;
+            const newY = Math.random() * (maxY - minY) + minY;
+            
+            // Apply the new position. We use absolute positioning with 'left'/'top'
+            // for greater control, removing the initial 50% offset from the style attribute.
+            yesBtn.style.left = `${newX}px`;
+            yesBtn.style.top = `${newY}px`;
+            yesBtn.style.transform = 'none'; // Clear the initial transform(-50%, -50%)
+        }
+
+        /**
+         * Resets the yes button to the center (initial state on Page 2).
+         */
+        function resetYesButton() {
+            yesBtn.style.transform = 'translate(-50%, -50%)';
+            yesBtn.style.top = '50%';
+            yesBtn.style.left = '50%';
+        }
+
+        // --- Event Listeners for the 'Yes' button (The main trick) ---
+
+        // 1. Mouse movement (for desktop/tablet)
+        yesBtn.addEventListener('mousemove', moveYesButton);
+        yesBtn.addEventListener('mouseover', moveYesButton); 
+
+        // 2. Touch movement (for mobile)
+        yesBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); 
+            moveYesButton(); 
+        });
+
+        yesBtn.addEventListener('touchmove', (e) => {
+            e.preventDefault(); 
+            moveYesButton();
+        });
+
+        // 3. Click attempt (fallback/safety)
+        yesBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            moveYesButton();
+        });
+
+
+        // Initialize the view when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage(1);
+        });
+
+    </script>
+</body>
+</html>
